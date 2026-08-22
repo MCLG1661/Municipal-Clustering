@@ -10,10 +10,6 @@ Sustentabilidade e Desenvolvimento nos Municípios Portugueses
 </h1>
 
 <p align="center">
-Análise de Dados e Machine Learning para identificação de padrões entre municípios portugueses utilizando dados da PORDATA.
-</p>
-
-<p align="center">
   <img src="https://img.shields.io/badge/Python-3.x-blue">
   <img src="https://img.shields.io/badge/Data%20Analysis-Pandas-blue">
   <img src="https://img.shields.io/badge/Machine%20Learning-Scikit--learn-orange">

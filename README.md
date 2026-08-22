@@ -1,3 +1,3 @@
 # Pordata-Municipal-Clustering
 
-*Análise de dados e clusterização de 25 municípios portugueses com Python, K-Means, PCA e dados da PORDATA.*
+*Projeto desenvolvido como trabalho final do curso Análise de Dados com Python, ministrado pelo então Instituto Politécnico de Viana do Castelo (IPVC), atual Universidade Politécnica de Viana do Castelo, em Portugal.*

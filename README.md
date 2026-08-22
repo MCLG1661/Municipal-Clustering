@@ -13,13 +13,13 @@
 
 ---
 
-## Pergunta de Partida
+## ❓ Pergunta de Partida
 
 Os municípios portugueses apresentam perfis homogéneos de desenvolvimento e sustentabilidade ou é possível identificar grupos com características distintas ?
 
 ---
 
-## Dataset
+## 🗃️ Dataset
 
 A base utiliza arquivos municipais da PORDATA com dados de **2011, 2021 e 2024**. Para a clusterização, o recorte principal é 2024, incorporando também a variação populacional entre 2011 e 2024.
 
@@ -32,18 +32,18 @@ O indicador **Poder de Compra**, citado no notebook acadêmico original, não fo
 
 ---
 
-## Metodologia
+## 🧠 Metodologia
 
-1. Extração e consolidação dos 25 arquivos Excel.
-2. Validação de dados e remoção de *fallbacks* simulados.
-3. Engenharia de variáveis.
-4. Seleção de atributos evitando redundância direta entre proporções etárias.
-5. Padronização com `StandardScaler`.
-6. Teste de `k` entre 2 e 6 com **coeficiente de silhueta**.
-7. Clusterização com **K-Means**.
-8. Interpretação por perfis médios, ANOVA e PCA.
+1. 📥 Extração e consolidação dos 25 arquivos Excel.
+2. 🗂️ Validação de dados e remoção de *fallbacks* simulados.
+3. 🛠️ Engenharia de variáveis.
+4. 🧩 Seleção de atributos evitando redundância direta entre proporções etárias.
+5. ⚖️ Padronização com `StandardScaler`.
+6. 🔢 Teste de `k` entre 2 e 6 com **coeficiente de silhueta**.
+7. 🤖 Clusterização com **K-Means**.
+8. 💡 Interpretação por perfis médios, ANOVA e PCA.
 
-### Variáveis Usadas no Modelo Final
+### 🧩 Variáveis Usadas no Modelo Final
 
 `Densidade`, `Idosos`, `Desemprego`, `Residuos`, `Energia`, `VariacaoPop` e `EnsinoSuperior_por1000`.
 
@@ -67,7 +67,7 @@ A silhueta indica uma estrutura de clusters **moderada, não perfeitamente separ
 
 ---
 
-## Validação estatística
+## 🧪 Validação estatística
 
 Na solução final, ANOVA apontou diferenças estatisticamente significativas (`p < 0,05`) para densidade, percentagem de idosos, desemprego, resíduos e ensino superior por 1.000 habitantes. Energia e variação populacional não apresentaram diferenças significativas entre os três grupos.
 
@@ -75,20 +75,7 @@ O teste Qui-Quadrado entre cluster e região **não é usado como evidência inf
 
 ---
 
-## Principais correções em relação ao notebook original
-
-- Remoção de dados simulados usados como *fallback*.
-- Correção do carregamento que fazia a análise cair para apenas Lisboa, Porto e Braga.
-- Remoção da variável `Poder_Compra`, ausente nos arquivos originais.
-- Correção de `Ensino_Superior`: o notebook original podia capturar contagens de estabelecimentos/alunos como se fossem percentagens.
-- Criação de `EnsinoSuperior_por1000` como métrica comparável entre municípios.
-- Criação da taxa de natalidade a partir dos dados disponíveis.
-- Revisão da escolha de `k` com base na silhueta.
-- Remoção da afirmação de associação geográfica significativa via Qui-Quadrado sem suporte estatístico adequado.
-
----
-
-## Estrutura do repositório
+## 📂Estrutura do repositório
 
 ```text
 pordata-municipal-clustering/
@@ -107,7 +94,7 @@ pordata-municipal-clustering/
 
 ---
 
-## Como executar
+## ▶️ Como executar
 
 ### Windows — PowerShell
 
@@ -125,17 +112,17 @@ python src/cluster_analysis.py
 
 ---
 
-## Tecnologias
+## 🛠️ Tecnologias
 
 Python · Pandas · NumPy · Scikit-learn · SciPy · Matplotlib · Jupyter · K-Means · PCA · Data Analysis 
 
-## Fonte dos dados
+## 📥 Fonte dos dados
 
 PORDATA — dados extraídos dos arquivos municipais fornecidos para o projeto, com indicação de obtenção em **07/03/2026** nos próprios arquivos-fonte.
 
 ---
 
-## Autor
+## 👤 Autor
 
 Marcus Guedes
 

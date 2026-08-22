@@ -61,4 +61,82 @@ A silhueta indica uma estrutura de clusters **moderada, não perfeitamente separ
 - **Cluster 1 (5 municípios):** Almada, Cascais, Funchal, Ponta Delgada, Sintra
 - **Cluster 2 (2 municípios):** Lisboa, Porto
 
+![Seleção de k](images/silhouette_k.png)
 
+![PCA dos clusters](images/pca_clusters.png)
+
+---
+
+## Validação estatística
+
+Na solução final, ANOVA apontou diferenças estatisticamente significativas (`p < 0,05`) para densidade, percentagem de idosos, desemprego, resíduos e ensino superior por 1.000 habitantes. Energia e variação populacional não apresentaram diferenças significativas entre os três grupos.
+
+O teste Qui-Quadrado entre cluster e região **não é usado como evidência inferencial no projeto revisado**, porque a amostra de 25 municípios distribuída por várias regiões gera frequências esperadas muito baixas, violando as condições usuais do teste.
+
+---
+
+## Principais correções em relação ao notebook original
+
+- Remoção de dados simulados usados como *fallback*.
+- Correção do carregamento que fazia a análise cair para apenas Lisboa, Porto e Braga.
+- Remoção da variável `Poder_Compra`, ausente nos arquivos originais.
+- Correção de `Ensino_Superior`: o notebook original podia capturar contagens de estabelecimentos/alunos como se fossem percentagens.
+- Criação de `EnsinoSuperior_por1000` como métrica comparável entre municípios.
+- Criação da taxa de natalidade a partir dos dados disponíveis.
+- Revisão da escolha de `k` com base na silhueta.
+- Remoção da afirmação de associação geográfica significativa via Qui-Quadrado sem suporte estatístico adequado.
+
+---
+
+## Estrutura do repositório
+
+```text
+pordata-municipal-clustering/
+├── README.md
+├── requirements.txt
+├── data/
+│   ├── raw/
+│   └── processed/
+├── images/
+├── notebooks/
+│   └── 01_pordata_municipal_clustering.ipynb
+└── src/
+    ├── build_dataset.py
+    └── cluster_analysis.py
+```
+
+---
+
+## Como executar
+
+```bash
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+
+pip install -r requirements.txt
+python src/build_dataset.py
+python src/cluster_analysis.py
+```
+
+---
+
+## Tecnologias
+
+Python · Pandas · NumPy · Scikit-learn · SciPy · Matplotlib · Jupyter · K-Means · PCA · Data Analysis
+
+## Fonte dos dados
+
+PORDATA — dados extraídos dos arquivos municipais fornecidos para o projeto, com indicação de obtenção em **07/03/2026** nos próprios arquivos-fonte.
+
+---
+
+## Autor
+
+Marcus Guedes
+
+Marketing | Data Science | Inteligência Artificial | Gestão de Projetos
+
+GitHub: MCLG1661
+
+LinkedIn: Marcus Guedes

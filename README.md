@@ -1,4 +1,4 @@
-# <img width="800" height="400" alt="ChatGPT Image 22 de ago  de 2026, 09_04_29" src="https://github.com/user-attachments/assets/64520f01-013f-4679-9e78-d15a5fe251ed" />
+# <img width="600" height="300" alt="ChatGPT Image 22 de ago  de 2026, 09_04_29" src="https://github.com/user-attachments/assets/64520f01-013f-4679-9e78-d15a5fe251ed" />
 # Pordata-Municipal-ClusteringPordata-Municipal-Clustering
 
 

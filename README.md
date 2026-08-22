@@ -53,7 +53,7 @@ A população absoluta foi excluída do modelo final para reduzir o peso do port
 
 ---
 
-## Resultado
+## 📊 Resultado
 
 A melhor solução entre `k=2..6` foi **k=3**, com coeficiente de silhueta de **0.291**.
 

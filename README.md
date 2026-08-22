@@ -13,7 +13,7 @@
 
 ---
 
-## Pergunta de partida
+## Pergunta de Ppartida
 
 Os municípios portugueses apresentam perfis homogéneos de desenvolvimento e sustentabilidade ou é possível identificar grupos com características distintas ?
 
@@ -43,7 +43,7 @@ O indicador **Poder de Compra**, citado no notebook acadêmico original, não fo
 7. Clusterização com **K-Means**.
 8. Interpretação por perfis médios, ANOVA e PCA.
 
-### Variáveis usadas no modelo final
+### Variáveis Usadas no Modelo Final
 
 `Densidade`, `Idosos`, `Desemprego`, `Residuos`, `Energia`, `VariacaoPop` e `EnsinoSuperior_por1000`.
 

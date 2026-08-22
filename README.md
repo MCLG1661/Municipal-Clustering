@@ -127,7 +127,7 @@ python src/cluster_analysis.py
 
 ## Tecnologias
 
-Python · Pandas · NumPy · Scikit-learn · SciPy · Matplotlib · Jupyter · K-Means · PCA · Data Analysis
+Python · Pandas · NumPy · Scikit-learn · SciPy · Matplotlib · Jupyter · K-Means · PCA · Data Analysis 
 
 ## Fonte dos dados
 

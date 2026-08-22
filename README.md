@@ -43,7 +43,7 @@ O indicador **Poder de Compra**, citado no notebook acadêmico original, não fo
 7. 🤖 Clusterização com **K-Means**.
 8. 💡 Interpretação por perfis médios, ANOVA e PCA.
 
-### 🧩 Variáveis Usadas no Modelo Final
+### 🎛️ Variáveis Usadas no Modelo Final
 
 `Densidade`, `Idosos`, `Desemprego`, `Residuos`, `Energia`, `VariacaoPop` e `EnsinoSuperior_por1000`.
 

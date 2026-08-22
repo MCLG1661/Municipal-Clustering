@@ -13,7 +13,7 @@
 
 ---
 
-## Pergunta de Ppartida
+## Pergunta de Partida
 
 Os municípios portugueses apresentam perfis homogéneos de desenvolvimento e sustentabilidade ou é possível identificar grupos com características distintas ?
 

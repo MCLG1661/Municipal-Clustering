@@ -109,13 +109,17 @@ pordata-municipal-clustering/
 
 ## Como executar
 
+### Windows — PowerShell
+
 ```bash
 python -m venv .venv
-# Windows
-.venv\Scripts\activate
+
+.\.venv\Scripts\Activate.ps1
 
 pip install -r requirements.txt
+
 python src/build_dataset.py
+
 python src/cluster_analysis.py
 ```
 

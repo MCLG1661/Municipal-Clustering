@@ -1,4 +1,4 @@
-# <img width="600" height="300" alt="ChatGPT Image 22 de ago  de 2026, 09_07_55" src="https://github.com/user-attachments/assets/e7a233d9-2d11-4ee7-9ead-a234f366126d" />
+# <img width="300" height="300" alt="ChatGPT Image 22 de ago  de 2026, 09_07_55" src="https://github.com/user-attachments/assets/e7a233d9-2d11-4ee7-9ead-a234f366126d" />
 # Sustentabilidade e Desenvolvimento nos Municípios Portugueses
 
 

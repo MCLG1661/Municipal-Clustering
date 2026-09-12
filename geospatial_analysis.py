@@ -455,117 +455,15 @@ def join_clusters_with_geometry():
     return joined
 
 
-def apply_bounds(ax, gdf, padding=0.08):
-    """
-    Ajusta o enquadramento de um GeoDataFrame
-    adicionando margem proporcional.
-    """
-
-    if gdf.empty:
-        return
-
-    minx, miny, maxx, maxy = (
-        gdf.total_bounds
-    )
-
-    width = maxx - minx
-    height = maxy - miny
-
-    if width == 0:
-        width = 0.1
-
-    if height == 0:
-        height = 0.1
-
-    ax.set_xlim(
-        minx - width * padding,
-        maxx + width * padding,
-    )
-
-    ax.set_ylim(
-        miny - height * padding,
-        maxy + height * padding,
-    )
-
-
-def plot_region(
-    ax,
-    gdf,
-    title=None,
-    show_labels=False,
-):
-    """
-    Plota uma região usando cores explícitas
-    por cluster.
-    """
-
-    if gdf.empty:
-        ax.set_axis_off()
-        return
-
-    colors = [
-        PALETTE.get(
-            int(cluster),
-            "#999999",
-        )
-        for cluster in gdf["Cluster"]
-    ]
-
-    gdf.plot(
-        ax=ax,
-        color=colors,
-        edgecolor="white",
-        linewidth=0.9,
-    )
-
-    apply_bounds(
-        ax,
-        gdf,
-    )
-
-    if title:
-        ax.set_title(
-            title,
-            fontsize=12,
-            fontweight="bold",
-            pad=8,
-        )
-
-    if show_labels:
-
-        for _, row in gdf.iterrows():
-
-            point = (
-                row.geometry
-                .representative_point()
-            )
-
-            ax.annotate(
-                row["Municipio"],
-                xy=(
-                    point.x,
-                    point.y,
-                ),
-                xytext=(
-                    3,
-                    3,
-                ),
-                textcoords="offset points",
-                fontsize=8,
-            )
-
-    ax.set_axis_off()
-
-
 def save_static_map(gdf):
     """
-    Gera mapa estático para apresentação no README.
+    Gera o mapa estático para apresentação no README.
 
-    Layout:
-    - Portugal Continental em destaque
-    - Açores em inset
-    - Madeira em inset
-    - Legenda única para os clusters
+    O PNG apresenta os 23 municípios analisados
+    em Portugal Continental.
+
+    Funchal e Ponta Delgada permanecem disponíveis
+    no mapa interativo Folium.
     """
 
     IMAGES.mkdir(
@@ -587,94 +485,54 @@ def save_static_map(gdf):
         )
     ].copy()
 
-    azores = gdf[
-        gdf["Municipio"]
-        == "Ponta Delgada"
-    ].copy()
+    colors = [
+        PALETTE.get(
+            int(cluster),
+            "#999999",
+        )
+        for cluster in mainland["Cluster"]
+    ]
 
-    madeira = gdf[
-        gdf["Municipio"]
-        == "Funchal"
-    ].copy()
-
-    fig = plt.figure(
+    fig, ax = plt.subplots(
         figsize=(
-            14,
-            9,
+            10,
+            11,
         )
     )
 
-    grid = fig.add_gridspec(
-        nrows=2,
-        ncols=4,
-        width_ratios=[
-            1,
-            1,
-            1,
-            0.85,
-        ],
-        height_ratios=[
-            1,
-            1,
-        ],
-        wspace=0.05,
-        hspace=0.20,
+    mainland.plot(
+        ax=ax,
+        color=colors,
+        edgecolor="white",
+        linewidth=1.0,
     )
 
-    ax_main = fig.add_subplot(
-        grid[
-            :,
-            :3,
-        ]
+    minx, miny, maxx, maxy = (
+        mainland.total_bounds
     )
 
-    ax_azores = fig.add_subplot(
-        grid[
-            0,
-            3,
-        ]
+    width = maxx - minx
+    height = maxy - miny
+
+    ax.set_xlim(
+        minx - width * 0.05,
+        maxx + width * 0.05,
     )
 
-    ax_madeira = fig.add_subplot(
-        grid[
-            1,
-            3,
-        ]
+    ax.set_ylim(
+        miny - height * 0.05,
+        maxy + height * 0.05,
     )
 
-    plot_region(
-        ax_main,
-        mainland,
-    )
-
-    plot_region(
-        ax_azores,
-        azores,
-        title="Açores",
-        show_labels=True,
-    )
-
-    plot_region(
-        ax_madeira,
-        madeira,
-        title="Madeira",
-        show_labels=True,
-    )
-
-    fig.suptitle(
-        "Clusters de Desenvolvimento e Sustentabilidade",
-        fontsize=18,
+    ax.set_title(
+        "Clusters de Desenvolvimento e Sustentabilidade\n"
+        "Municípios Portugueses — Portugal Continental",
+        fontsize=17,
         fontweight="bold",
-        y=0.97,
+        pad=20,
     )
 
-    fig.text(
-        0.5,
-        0.925,
-        "Análise de 25 Municípios Portugueses",
-        ha="center",
-        fontsize=12,
-    )
+    ax.set_axis_off()
 
     legend_elements = [
         Patch(
@@ -691,24 +549,45 @@ def save_static_map(gdf):
         ),
     ]
 
-    fig.legend(
+    ax.legend(
         handles=legend_elements,
         loc="lower center",
+        bbox_to_anchor=(
+            0.5,
+            -0.08,
+        ),
         ncol=3,
         frameon=False,
         fontsize=11,
-        bbox_to_anchor=(
-            0.5,
-            0.02,
-        ),
     )
 
     fig.text(
         0.5,
-        0.005,
-        "Fonte: PORDATA | Geometrias: CAOP2025 — Direção-Geral do Território",
+        0.035,
+        (
+            "Mapa estático: 23 municípios do Continente | "
+            "Funchal e Ponta Delgada disponíveis no mapa interativo"
+        ),
+        ha="center",
+        fontsize=9,
+    )
+
+    fig.text(
+        0.5,
+        0.015,
+        (
+            "Fonte: PORDATA | "
+            "Geometrias: CAOP2025 — Direção-Geral do Território"
+        ),
         ha="center",
         fontsize=8,
+    )
+
+    fig.subplots_adjust(
+        top=0.90,
+        bottom=0.12,
+        left=0.05,
+        right=0.95,
     )
 
     fig.savefig(
@@ -782,7 +661,8 @@ def popup_html(row):
 
 def save_interactive_map(gdf):
     """
-    Cria o mapa interativo utilizando Folium.
+    Cria o mapa interativo com os 25 municípios
+    utilizando Folium.
     """
 
     DOCS.mkdir(

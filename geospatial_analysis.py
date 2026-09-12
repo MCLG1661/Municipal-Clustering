@@ -18,7 +18,6 @@ IMAGES = ROOT / "images"
 DOCS = ROOT / "docs"
 
 
-# Downloads oficiais CAOP2025 — Direção-Geral do Território
 CAOP_URLS = {
     "Continente": (
         "https://geo2.dgterritorio.gov.pt/caop/"
@@ -44,8 +43,8 @@ PALETTE = {
 
 def normalize_name(value):
     """
-    Normaliza nomes para facilitar o relacionamento entre
-    os municípios da PORDATA e da CAOP.
+    Normaliza nomes para facilitar o relacionamento
+    entre municípios da PORDATA e da CAOP.
     """
 
     text = str(value).strip().casefold()
@@ -64,10 +63,8 @@ def normalize_name(value):
 
 def ensure_caop_downloads():
     """
-    Faz download e extração dos GeoPackages oficiais da CAOP2025.
-
-    O download só ocorre caso os arquivos ainda não estejam
-    armazenados localmente.
+    Faz download e extração dos GeoPackages oficiais
+    da CAOP2025 caso ainda não estejam disponíveis.
     """
 
     CACHE.mkdir(
@@ -110,7 +107,6 @@ def ensure_caop_downloads():
         )
 
         with ZipFile(zip_path) as archive:
-
             archive.extractall(
                 region_dir
             )
@@ -120,7 +116,6 @@ def ensure_caop_downloads():
         )
 
         if not extracted:
-
             raise FileNotFoundError(
                 f"Nenhum GeoPackage encontrado "
                 f"após extrair {region}."
@@ -135,7 +130,7 @@ def ensure_caop_downloads():
 
 def gpkg_layers(path):
     """
-    Retorna as camadas vetoriais existentes
+    Retorna as camadas vetoriais disponíveis
     dentro de um GeoPackage.
     """
 
@@ -155,12 +150,10 @@ def gpkg_layers(path):
     ]
 
 
-def layer_columns(
-    path,
-    layer,
-):
+def layer_columns(path, layer):
     """
-    Retorna as colunas disponíveis em uma camada.
+    Retorna as colunas disponíveis
+    em uma camada do GeoPackage.
     """
 
     with sqlite3.connect(path) as connection:
@@ -255,7 +248,6 @@ def infer_name_column(columns):
     for candidate in possible_names:
 
         if candidate in columns:
-
             return columns[candidate]
 
     raise ValueError(
@@ -267,7 +259,8 @@ def infer_name_column(columns):
 def load_caop():
     """
     Carrega os municípios de Portugal Continental,
-    Açores e Madeira e converte tudo para EPSG:4326.
+    Açores e Madeira e converte as geometrias
+    para EPSG:4326.
     """
 
     frames = []
@@ -276,21 +269,17 @@ def load_caop():
 
     for gpkg in geopackages:
 
-        layer, columns = (
-            find_municipality_layer(
-                gpkg
-            )
+        layer, columns = find_municipality_layer(
+            gpkg
         )
 
-        name_column = (
-            infer_name_column(
-                columns
-            )
+        name_column = infer_name_column(
+            columns
         )
 
         print(
-            f"Lendo {gpkg.name}"
-            f" | camada: {layer}"
+            f"Lendo {gpkg.name} "
+            f"| camada: {layer}"
         )
 
         frame = gpd.read_file(
@@ -473,8 +462,10 @@ def join_clusters_with_geometry():
 
 def save_static_map(gdf):
     """
-    Gera o mapa estático dos clusters
-    utilizando GeoPandas.
+    Gera um mapa estático de portfólio com:
+    - Portugal Continental em destaque
+    - Açores em quadro auxiliar
+    - Madeira em quadro auxiliar
     """
 
     IMAGES.mkdir(
@@ -487,15 +478,43 @@ def save_static_map(gdf):
         / "clusters_geopandas.png"
     )
 
-    fig, ax = plt.subplots(
+    mainland = gdf[
+        ~gdf["Municipio"].isin(
+            [
+                "Funchal",
+                "Ponta Delgada",
+            ]
+        )
+    ].copy()
+
+    azores = gdf[
+        gdf["Municipio"]
+        == "Ponta Delgada"
+    ].copy()
+
+    madeira = gdf[
+        gdf["Municipio"]
+        == "Funchal"
+    ].copy()
+
+    fig = plt.figure(
         figsize=(
             14,
-            9,
+            10,
         )
     )
 
-    gdf.plot(
-        ax=ax,
+    ax_main = fig.add_axes(
+        [
+            0.07,
+            0.08,
+            0.67,
+            0.80,
+        ]
+    )
+
+    mainland.plot(
+        ax=ax_main,
         column="Cluster",
         categorical=True,
         legend=True,
@@ -504,17 +523,68 @@ def save_static_map(gdf):
         linewidth=0.8,
     )
 
-    ax.set_title(
-        "Clusters de Desenvolvimento "
-        "e Sustentabilidade\n"
+    ax_main.set_title(
+        "Clusters de Desenvolvimento e Sustentabilidade\n"
         "25 Municípios Portugueses",
-        fontsize=15,
-        pad=14,
+        fontsize=16,
+        pad=18,
     )
 
-    ax.set_axis_off()
+    ax_main.set_axis_off()
 
-    plt.tight_layout()
+    ax_azores = fig.add_axes(
+        [
+            0.77,
+            0.55,
+            0.18,
+            0.22,
+        ]
+    )
+
+    if not azores.empty:
+
+        azores.plot(
+            ax=ax_azores,
+            column="Cluster",
+            categorical=True,
+            cmap="Set2",
+            edgecolor="white",
+            linewidth=0.8,
+        )
+
+    ax_azores.set_title(
+        "Açores",
+        fontsize=11,
+    )
+
+    ax_azores.set_axis_off()
+
+    ax_madeira = fig.add_axes(
+        [
+            0.77,
+            0.25,
+            0.18,
+            0.22,
+        ]
+    )
+
+    if not madeira.empty:
+
+        madeira.plot(
+            ax=ax_madeira,
+            column="Cluster",
+            categorical=True,
+            cmap="Set2",
+            edgecolor="white",
+            linewidth=0.8,
+        )
+
+    ax_madeira.set_title(
+        "Madeira",
+        fontsize=11,
+    )
+
+    ax_madeira.set_axis_off()
 
     fig.savefig(
         output,
@@ -586,7 +656,7 @@ def popup_html(row):
 
 def save_interactive_map(gdf):
     """
-    Cria mapa interativo utilizando Folium.
+    Cria o mapa interativo utilizando Folium.
     """
 
     DOCS.mkdir(
@@ -703,8 +773,6 @@ def save_interactive_map(gdf):
         fmap
     )
 
-    # Inclui Portugal Continental,
-    # Açores e Madeira no enquadramento.
     minx, miny, maxx, maxy = (
         gdf.total_bounds
     )

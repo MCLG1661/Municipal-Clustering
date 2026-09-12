@@ -1,4 +1,5 @@
-# <img width="400" height="400" alt="ChatGPT Image 22 de ago  de 2026, 09_07_55" src="https://github.com/user-attachments/assets/e7a233d9-2d11-4ee7-9ead-a234f366126d" />
+# <img width="400" height="400" alt="Municipal Clustering" src="https://github.com/user-attachments/assets/e7a233d9-2d11-4ee7-9ead-a234f366126d" />
+
 # Sustentabilidade e Desenvolvimento nos Municípios Portugueses
 
 ![Python](https://img.shields.io/badge/Python-3.x-blue)
@@ -10,9 +11,9 @@
 ![PORDATA](https://img.shields.io/badge/Dados-PORDATA-red)
 ![CAOP2025](https://img.shields.io/badge/Geodados-CAOP2025-005A9C)
 
-Projeto de Data Science que combina **análise multivariada, clustering e análise geoespacial** para estudar perfis de desenvolvimento e sustentabilidade em 25 municípios portugueses.
+Projeto de **Data Science** que combina análise multivariada, Machine Learning não supervisionado e análise geoespacial para estudar perfis de desenvolvimento e sustentabilidade em **25 municípios portugueses**.
 
-O projeto nasceu como trabalho final do curso **Análise de Dados com Python**, do então Instituto Politécnico de Viana do Castelo (IPVC), atual Universidade Politécnica de Viana do Castelo, e foi posteriormente expandido com **GeoPandas e Folium** como parte da evolução dos estudos em Data Science.
+O projeto nasceu como trabalho final do curso **Análise de Dados com Python**, do então Instituto Politécnico de Viana do Castelo (IPVC), atual Universidade Politécnica de Viana do Castelo, e foi posteriormente expandido com **GeoPandas e Folium** durante a evolução dos estudos em Data Science.
 
 ---
 
@@ -20,7 +21,7 @@ O projeto nasceu como trabalho final do curso **Análise de Dados com Python**, 
 
 Os municípios portugueses apresentam perfis homogéneos de desenvolvimento e sustentabilidade ou é possível identificar grupos com características distintas?
 
-Além da segmentação estatística, a versão atual acrescenta uma segunda pergunta:
+Além da segmentação estatística, a evolução geoespacial acrescenta uma segunda pergunta:
 
 **Como esses perfis se distribuem espacialmente pelo território português?**
 
@@ -34,7 +35,15 @@ Para a clusterização, o recorte principal é 2024, incorporando também a vari
 
 Foram consolidados indicadores demográficos, socioeconómicos e ambientais.
 
-A camada geográfica utiliza a **Carta Administrativa Oficial de Portugal — CAOP2025**, da Direção-Geral do Território (DGT), obtida através do serviço geográfico público em formato GeoJSON.
+A camada geográfica utiliza a **Carta Administrativa Oficial de Portugal — CAOP2025**, disponibilizada pela **Direção-Geral do Território (DGT)**.
+
+As geometrias municipais são obtidas a partir dos **GeoPackages oficiais da CAOP2025**, contemplando:
+
+- Portugal Continental;
+- Região Autónoma dos Açores;
+- Região Autónoma da Madeira.
+
+Isso permite integrar geometrias oficiais aos resultados obtidos pelo modelo de clustering.
 
 ---
 
@@ -54,11 +63,13 @@ A camada geográfica utiliza a **Carta Administrativa Oficial de Portugal — CA
 ### Fase 2 — Análise Geoespacial
 
 9. Obtenção das geometrias municipais oficiais da CAOP2025.
-10. Normalização dos nomes dos municípios.
-11. Integração dos clusters com as geometrias usando `GeoPandas`.
-12. Validação do join dos 25 municípios.
-13. Criação de mapa estático dos clusters com `GeoPandas`.
-14. Desenvolvimento de mapa interativo com `Folium`, tooltips e camadas por cluster.
+10. Leitura dos GeoPackages com GeoPandas.
+11. Normalização dos nomes dos municípios.
+12. Integração dos clusters com as geometrias.
+13. Validação do join dos 25 municípios.
+14. Criação de mapa estático com GeoPandas.
+15. Desenvolvimento de mapa interativo com Folium.
+16. Inclusão de tooltips, popups e camadas por cluster.
 
 ---
 
@@ -80,7 +91,7 @@ A população absoluta foi excluída do modelo para reduzir o peso do porte do m
 
 ## 🤖 Resultado do Clustering
 
-A melhor solução entre `k = 2..6` foi:
+A melhor solução encontrada entre `k = 2..6` foi:
 
 **k = 3**
 
@@ -140,11 +151,11 @@ Porto
 
 ## 🌍 Análise Geoespacial com GeoPandas
 
-A evolução do projeto acrescenta uma camada territorial aos resultados obtidos pelo modelo de clustering.
+A evolução do projeto acrescenta uma **dimensão territorial** aos resultados obtidos pelo modelo de clustering.
 
-Com **GeoPandas**, os resultados analíticos são associados às geometrias oficiais dos municípios portugueses.
+Com **GeoPandas**, os resultados analíticos são associados às geometrias oficiais dos municípios portugueses fornecidas pela CAOP2025.
 
-O processo permite transformar:
+O processo transforma:
 
 ```text
 Município + Indicadores + Cluster
@@ -156,13 +167,15 @@ em:
 Município + Indicadores + Cluster + Geometria
 ```
 
-Isso possibilita analisar não apenas **quais municípios possuem características semelhantes**, mas também **como esses grupos estão distribuídos geograficamente**.
+Isso permite analisar não apenas **quais municípios possuem características semelhantes**, mas também **como esses grupos estão distribuídos geograficamente**.
 
-O mapa estático é gerado em:
+### Mapa estático dos clusters
 
-```text
-images/clusters_geopandas.png
-```
+O mapa estático apresenta os **23 municípios analisados em Portugal Continental**, permitindo visualizar territorialmente a distribuição dos três clusters.
+
+**Funchal e Ponta Delgada**, pertencentes às regiões autónomas da Madeira e dos Açores, permanecem contemplados na análise completa e podem ser explorados no mapa interativo.
+
+![Mapa estático dos clusters municipais](images/clusters_geopandas.png)
 
 ---
 
@@ -170,27 +183,31 @@ images/clusters_geopandas.png
 
 A segunda etapa da evolução geoespacial utiliza **Folium** para transformar os resultados em um mapa navegável e interativo.
 
-O mapa permite explorar individualmente os municípios analisados.
+Diferentemente da visualização estática, o mapa Folium contempla os **25 municípios analisados**, incluindo:
 
-Cada município apresenta informações como:
+- Portugal Continental;
+- Funchal — Madeira;
+- Ponta Delgada — Açores.
 
-- Município
-- Cluster
-- Região
-- População
-- Densidade populacional
-- Percentual de idosos
-- Desemprego
-- Variação populacional
-- Ensino superior por 1.000 habitantes
+Cada município pode ser explorado individualmente.
+
+Ao selecionar uma geometria, o mapa apresenta informações como:
+
+- Município;
+- Cluster;
+- Região;
+- População;
+- Densidade populacional;
+- Percentual de idosos;
+- Desemprego;
+- Variação populacional;
+- Ensino superior por 1.000 habitantes.
 
 Também é possível ativar e desativar visualmente os diferentes clusters.
 
-O mapa é gerado em:
+O arquivo interativo está disponível em:
 
-```text
-docs/municipal_clusters_map.html
-```
+[`docs/municipal_clusters_map.html`](docs/municipal_clusters_map.html)
 
 ---
 
@@ -219,10 +236,10 @@ K-Means
 Clusters Municipais
    │
    ▼
-GeoPandas
+CAOP2025
    │
    ▼
-CAOP2025
+GeoPandas
    │
    ▼
 Integração Dados + Geometria
@@ -233,7 +250,7 @@ Integração Dados + Geometria
 Folium
    │
    ▼
-Mapa Interativo dos Clusters
+Mapa Interativo dos 25 Municípios
 ```
 
 ---
@@ -263,8 +280,12 @@ Municipal-Clustering/
 │   └── clusters_geopandas.png
 │
 └── docs/
+    ├── ANÁLISE CRÍTICA DOS RESULTADOS.docx
+    ├── INFORMAÇÕES DO TRABALHO.docx
     └── municipal_clusters_map.html
 ```
+
+> Os arquivos da CAOP2025 utilizados durante a execução são obtidos automaticamente pelo script geoespacial e armazenados localmente, não sendo necessários como arquivos permanentes do repositório.
 
 ---
 
@@ -297,7 +318,7 @@ pip install -r requirements.txt
 
 ### 1. Reconstruir o dataset
 
-Caso queira reconstruir o dataset a partir dos arquivos Excel da PORDATA:
+Para reconstruir o dataset consolidado a partir dos arquivos Excel da PORDATA:
 
 ```bash
 python build_dataset.py
@@ -329,26 +350,33 @@ Esse arquivo contém os indicadores municipais e o cluster atribuído pelo model
 python geospatial_analysis.py
 ```
 
-Essa etapa realiza:
+Essa etapa:
 
 ```text
-Clusters
-   +
-Geometrias CAOP2025
-   │
-   ▼
-GeoPandas
-   │
-   ├── Mapa Estático
-   │
-   ▼
-Folium
-   │
-   ▼
-Mapa Interativo
+municipal_clusters.csv
+          +
+     CAOP2025
+          │
+          ▼
+      GeoPandas
+          │
+          ├── Mapa Estático
+          │
+          ▼
+        Folium
+          │
+          ▼
+Mapa Interativo dos Clusters
 ```
 
-A etapa geoespacial requer conexão com a internet para consultar a camada municipal da **CAOP2025 — Direção-Geral do Território**.
+e gera:
+
+```text
+images/clusters_geopandas.png
+docs/municipal_clusters_map.html
+```
+
+A análise geoespacial requer conexão com a internet na primeira execução para obter os **GeoPackages oficiais da CAOP2025**.
 
 ---
 
@@ -381,12 +409,18 @@ A etapa geoespacial requer conexão com a internet para consultar a camada munic
 ### Geospatial Data Science
 
 - GeoPandas
-- GeoJSON
+- GeoDataFrame
+- GeoPackage
 - CAOP2025
+- Sistemas de Referência de Coordenadas (CRS)
 
 ### Interactive Data Visualization
 
 - Folium
+- GeoJSON
+- Tooltips
+- Popups
+- Feature Groups
 
 ---
 
@@ -394,17 +428,27 @@ A etapa geoespacial requer conexão com a internet para consultar a camada munic
 
 ### PORDATA
 
-Base estatística utilizada para os indicadores municipais.
+A **PORDATA — Base de Dados Portugal Contemporâneo** fornece os indicadores estatísticos municipais utilizados na análise.
+
+Os dados utilizados no projeto abrangem **2011, 2021 e 2024**, com foco analítico principal em 2024.
 
 ### Direção-Geral do Território — DGT
 
-A **CAOP2025 — Carta Administrativa Oficial de Portugal** fornece as geometrias oficiais utilizadas na análise geoespacial.
+A **CAOP2025 — Carta Administrativa Oficial de Portugal** fornece as geometrias administrativas oficiais utilizadas na análise geoespacial.
+
+Para garantir a cobertura dos 25 municípios selecionados, o projeto utiliza as geometrias correspondentes a:
+
+```text
+Portugal Continental
+Açores
+Madeira
+```
 
 ---
 
 ## 🚀 Evolução do Projeto
 
-Este projeto foi desenvolvido de forma incremental.
+Este projeto foi desenvolvido de forma incremental, incorporando novas técnicas sobre uma base analítica já existente.
 
 ### Etapa original
 
@@ -417,7 +461,10 @@ Python
 Pandas
 Análise Exploratória
 Tratamento de Dados
+Engenharia de Variáveis
 K-Means
+Silhouette Score
+ANOVA
 PCA
 Interpretação de Clusters
 ```
@@ -431,17 +478,19 @@ Novas competências incorporadas:
 ```text
 GeoPandas
 GeoDataFrame
+GeoPackage
 Dados Geoespaciais
-GeoJSON
+Sistemas de Coordenadas
 Integração Dados + Geometria
 Visualização Cartográfica
 Folium
 Mapas Interativos
 Tooltips
+Popups
 Camadas Geográficas
 ```
 
-O projeto passa, portanto, de uma análise exclusivamente estatística para uma abordagem que combina:
+O projeto passa, portanto, de uma análise predominantemente estatística para uma abordagem que combina:
 
 **Data Science + Machine Learning + Geospatial Analysis + Interactive Data Visualization**
 
@@ -458,15 +507,19 @@ Este projeto demonstra conhecimentos em:
 - Machine Learning não supervisionado;
 - K-Means;
 - avaliação de clusters;
+- Silhouette Score;
 - PCA;
 - análise estatística;
+- ANOVA;
 - integração de dados tabulares e geográficos;
 - GeoPandas;
 - manipulação de GeoDataFrames;
-- dados GeoJSON;
+- GeoPackage;
+- sistemas de coordenadas;
 - análise geoespacial;
 - Folium;
-- visualização cartográfica interativa;
+- visualização cartográfica;
+- mapas interativos;
 - interpretação de dados orientada a problemas reais.
 
 ---
@@ -475,9 +528,11 @@ Este projeto demonstra conhecimentos em:
 
 Os resultados mostram que os municípios analisados apresentam **perfis distintos de desenvolvimento e sustentabilidade**, permitindo identificar grupos com características semelhantes.
 
-A incorporação da análise geoespacial acrescenta uma nova dimensão ao estudo: além de identificar matematicamente os clusters, torna-se possível observar **como esses perfis se distribuem pelo território português**.
+A incorporação da análise geoespacial acrescenta uma nova dimensão ao estudo: além de identificar matematicamente os clusters, torna-se possível observar **como esses perfis se distribuem territorialmente**.
 
-Essa evolução demonstra como técnicas de Data Science podem integrar **estatística, Machine Learning e informação geográfica** para produzir análises mais completas e interpretáveis.
+O mapa estático permite uma leitura imediata dos municípios analisados em Portugal Continental, enquanto o mapa interativo amplia a exploração para os **25 municípios**, incluindo Madeira e Açores.
+
+Essa evolução demonstra como técnicas de Data Science podem integrar **estatística, Machine Learning, informação geográfica e visualização interativa** para produzir análises mais completas, exploráveis e interpretáveis.
 
 ---
 

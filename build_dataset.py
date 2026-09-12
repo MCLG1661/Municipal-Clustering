@@ -1,13 +1,9 @@
 """
-Constrói o dataset consolidado a partir dos arquivos PORDATA
-armazenados na raiz do repositório.
+Constrói o dataset consolidado a partir dos 25 arquivos Excel
+da PORDATA armazenados na raiz do repositório.
 
-O script:
-- valida a presença dos 25 arquivos municipais;
-- extrai os indicadores necessários;
-- calcula variáveis derivadas;
-- valida valores ausentes;
-- gera pordata_municipios_2024.csv na raiz do projeto.
+Saída:
+    pordata_municipios_2024.csv
 """
 
 from pathlib import Path
@@ -16,9 +12,7 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parent
-
 RAW_DIR = ROOT
-
 OUT = ROOT / "pordata_municipios_2024.csv"
 
 
@@ -30,78 +24,131 @@ REGIOES = {
     "Viana do Castelo": "Norte",
     "Vila Nova de Gaia": "Norte",
     "Vila Real": "Norte",
-
     "Aveiro": "Centro",
     "Castelo Branco": "Centro",
     "Coimbra": "Centro",
     "Guarda": "Centro",
     "Leiria": "Centro",
     "Viseu": "Centro",
-
     "Cascais": "Lisboa",
     "Lisboa": "Lisboa",
     "Setúbal": "Lisboa",
     "Sintra": "Lisboa",
     "Almada": "Lisboa",
-
     "Beja": "Alentejo",
     "Évora": "Alentejo",
     "Portalegre": "Alentejo",
     "Santarém": "Alentejo",
-
     "Faro": "Algarve",
-
     "Ponta Delgada": "Açores",
-
     "Funchal": "Madeira",
 }
 
 
 def norm(value):
-    """
-    Normaliza valores textuais para facilitar buscas.
-    """
-
     if pd.isna(value):
         return ""
-
     return str(value).strip().lower()
+
+
+def numeric_value(value):
+    if pd.isna(value) or value == "-":
+        return None
+
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
 
 
 def find_value(df, text, column):
     """
-    Localiza uma linha pela descrição textual e retorna
-    o valor da coluna correspondente.
+    Busca um indicador textual e retorna a última ocorrência
+    numérica válida, mantendo o comportamento adequado para
+    os demais indicadores PORDATA.
     """
 
     labels = df.iloc[:, 0].map(norm)
 
-    hit = df[
+    matches = df[
         labels.str.contains(
             text,
             regex=False,
         )
     ]
 
-    if hit.empty:
+    if matches.empty:
         return None
 
-    value = hit.iloc[-1, column]
+    for _, row in matches.iloc[::-1].iterrows():
+        value = numeric_value(row.iloc[column])
 
-    if pd.isna(value) or value == "-":
+        if value is not None:
+            return value
+
+    return None
+
+
+def find_population(df, column):
+    """
+    Localiza a população residente total.
+
+    Os arquivos PORDATA podem conter várias linhas cujo texto
+    inclui 'população residente'. Para evitar selecionar
+    subgrupos ou indicadores derivados, a função percorre as
+    ocorrências na ordem original e retorna o primeiro valor
+    positivo válido.
+    """
+
+    labels = df.iloc[:, 0].map(norm)
+
+    matches = df[
+        labels.str.contains(
+            "população residente",
+            regex=False,
+        )
+    ]
+
+    if matches.empty:
         return None
 
-    try:
-        return float(value)
+    for _, row in matches.iterrows():
+        value = numeric_value(row.iloc[column])
 
-    except (TypeError, ValueError):
+        if value is not None and value > 0:
+            return value
+
+    return None
+
+
+def find_students(df, column):
+    """
+    Obtém o número de alunos do ensino superior.
+    """
+
+    labels = df.iloc[:, 0].map(norm)
+
+    matches = df[
+        labels.str.startswith(
+            "alunos do ensino superior"
+        )
+    ]
+
+    if matches.empty:
         return None
+
+    for _, row in matches.iterrows():
+        value = numeric_value(row.iloc[column])
+
+        if value is not None:
+            return value
+
+    return None
 
 
 def extract_file(path):
     """
-    Extrai os indicadores necessários de um arquivo
-    municipal da PORDATA.
+    Extrai os indicadores de um município.
     """
 
     df = pd.read_excel(
@@ -119,15 +166,13 @@ def extract_file(path):
             f"{path.name}: {municipio}"
         )
 
-    pop11 = find_value(
+    pop11 = find_population(
         df,
-        "população residente",
         1,
     )
 
-    pop24 = find_value(
+    pop24 = find_population(
         df,
-        "população residente",
         5,
     )
 
@@ -143,34 +188,12 @@ def extract_file(path):
         5,
     )
 
-    labels = df.iloc[:, 0].map(
-        norm
+    alunos24 = find_students(
+        df,
+        5,
     )
 
-    alunos = df[
-        labels.str.startswith(
-            "alunos do ensino superior"
-        )
-    ]
-
-    if (
-        alunos.empty
-        or pd.isna(
-            alunos.iloc[0, 5]
-        )
-    ):
-        alunos24 = None
-
-    else:
-        try:
-            alunos24 = float(
-                alunos.iloc[0, 5]
-            )
-
-        except (TypeError, ValueError):
-            alunos24 = None
-
-    required_values = {
+    required = {
         "População 2011": pop11,
         "População 2024": pop24,
         "Superfície": superficie24,
@@ -180,68 +203,52 @@ def extract_file(path):
 
     missing = [
         name
-        for name, value
-        in required_values.items()
+        for name, value in required.items()
         if value is None
     ]
 
     if missing:
         raise ValueError(
-            f"{municipio}: indicadores obrigatórios "
-            f"não encontrados: {', '.join(missing)}"
+            f"{municipio}: indicadores não encontrados: "
+            + ", ".join(missing)
         )
 
-    if pop11 == 0:
+    if pop11 <= 0:
         raise ValueError(
-            f"{municipio}: população de 2011 igual a zero."
+            f"{municipio}: população de 2011 inválida."
         )
 
-    if pop24 == 0:
+    if pop24 <= 0:
         raise ValueError(
-            f"{municipio}: população de 2024 igual a zero."
+            f"{municipio}: população de 2024 inválida."
         )
 
-    if superficie24 == 0:
+    if superficie24 <= 0:
         raise ValueError(
-            f"{municipio}: superfície igual a zero."
+            f"{municipio}: superfície inválida."
         )
 
-    return {
+    record = {
         "Municipio": municipio,
-
-        "Regiao":
-        REGIOES[municipio],
-
-        "Populacao":
-        pop24,
-
-        "Densidade":
-        pop24
-        / superficie24,
-
-        "Jovens":
-        find_value(
+        "Regiao": REGIOES[municipio],
+        "Populacao": pop24,
+        "Densidade": pop24 / superficie24,
+        "Jovens": find_value(
             df,
             "jovens (%)",
             5,
         ),
-
-        "Idosos":
-        find_value(
+        "Idosos": find_value(
             df,
             "idosos (%)",
             5,
         ),
-
-        "IdadeAtiva":
-        find_value(
+        "IdadeAtiva": find_value(
             df,
             "população em idade activa",
             5,
         ),
-
-        "Desemprego":
-        find_value(
+        "Desemprego": find_value(
             df,
             (
                 "desempregados inscritos "
@@ -249,9 +256,7 @@ def extract_file(path):
             ),
             5,
         ),
-
-        "Residuos":
-        find_value(
+        "Residuos": find_value(
             df,
             (
                 "resíduos urbanos "
@@ -259,9 +264,7 @@ def extract_file(path):
             ),
             5,
         ),
-
-        "Energia":
-        find_value(
+        "Energia": find_value(
             df,
             (
                 "consumo de energia "
@@ -269,60 +272,62 @@ def extract_file(path):
             ),
             5,
         ),
-
-        "VariacaoPop":
-        (
-            (
-                pop24
-                - pop11
-            )
+        "VariacaoPop": (
+            (pop24 - pop11)
             / pop11
         )
         * 100,
-
-        "Natalidade":
-        (
+        "Natalidade": (
             nascimentos24
             / pop24
         )
         * 1000,
-
-        "EnsinoSuperior_por1000":
-        (
+        "EnsinoSuperior_por1000": (
             alunos24
             / pop24
         )
         * 1000,
     }
 
+    missing_record = [
+        key
+        for key, value in record.items()
+        if value is None
+    ]
+
+    if missing_record:
+        raise ValueError(
+            f"{municipio}: valores ausentes em: "
+            + ", ".join(missing_record)
+        )
+
+    return record
+
 
 def main():
-    """
-    Executa a consolidação dos arquivos municipais.
-    """
-
     files = sorted(
-        RAW_DIR.glob(
-            "*.xlsx"
-        )
+        RAW_DIR.glob("*.xlsx")
     )
 
     if len(files) != 25:
         raise RuntimeError(
             "Esperados 25 arquivos .xlsx "
-            f"na raiz do projeto; encontrados "
-            f"{len(files)}."
+            f"na raiz; encontrados {len(files)}."
         )
 
-    data = pd.DataFrame(
+    records = [
         extract_file(path)
         for path in files
+    ]
+
+    data = pd.DataFrame(
+        records
     )
 
-    data = data.sort_values(
-        "Municipio"
-    ).reset_index(
-        drop=True
+    data = (
+        data
+        .sort_values("Municipio")
+        .reset_index(drop=True)
     )
 
     if len(data) != 25:
@@ -331,17 +336,10 @@ def main():
             f"obtidos {len(data)}."
         )
 
-    duplicated = (
-        data[
-            "Municipio"
-        ]
-        .duplicated()
-    )
-
-    if duplicated.any():
+    if data["Municipio"].duplicated().any():
         duplicates = (
             data.loc[
-                duplicated,
+                data["Municipio"].duplicated(),
                 "Municipio",
             ]
             .tolist()
@@ -349,13 +347,10 @@ def main():
 
         raise RuntimeError(
             "Municípios duplicados: "
-            + ", ".join(
-                duplicates
-            )
+            + ", ".join(duplicates)
         )
 
     if data.isna().any().any():
-
         columns = (
             data.columns[
                 data.isna().any()
@@ -364,10 +359,8 @@ def main():
         )
 
         raise RuntimeError(
-            "Há valores ausentes nas colunas: "
-            + ", ".join(
-                columns
-            )
+            "Valores ausentes nas colunas: "
+            + ", ".join(columns)
         )
 
     data.to_csv(
@@ -386,8 +379,7 @@ def main():
     )
 
     print(
-        "Construção do dataset "
-        "concluída com sucesso."
+        "Construção do dataset concluída com sucesso."
     )
 
 

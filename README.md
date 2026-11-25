@@ -17,6 +17,12 @@ O projeto nasceu como trabalho final do curso **Análise de Dados com Python**, 
 
 ---
 
+## Visão executiva | Geospatial Data Science
+
+O estudo combina segmentação exploratória de 25 municípios, sete variáveis analíticas e integração com geometrias oficiais. A solução selecionada (k = 3, silhueta ≈ 0,291) permite explorar perfis territoriais, sem pretender representar todos os municípios portugueses ou estabelecer causalidade. Aplicações potenciais incluem diagnóstico territorial, planejamento e priorização de estudos complementares.
+
+[Mapa interativo (arquivo HTML para download e abertura local)](docs/municipal_clusters_map.html) · [Resultados da clusterização](municipal_clusters.csv)
+
 ## 🎯 Pergunta de partida
 
 Os municípios portugueses apresentam perfis homogéneos de desenvolvimento e sustentabilidade ou é possível identificar grupos com características distintas?

@@ -66,6 +66,8 @@ Isso permite integrar geometrias oficiais aos resultados obtidos pelo modelo de 
 7. Clusterização com `K-Means`.
 8. Interpretação por perfis médios, ANOVA e PCA.
 
+> Como os grupos foram construídos com as mesmas variáveis avaliadas pela ANOVA, os p-valores são apenas descritivos/exploratórios e não constituem validação inferencial independente dos clusters.
+
 ### Fase 2 — Análise Geoespacial
 
 9. Obtenção das geometrias municipais oficiais da CAOP2025.

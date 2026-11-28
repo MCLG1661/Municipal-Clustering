@@ -15,6 +15,10 @@ Projeto de **Data Science** que combina análise multivariada, Machine Learning 
 
 O projeto nasceu como trabalho final do curso **Análise de Dados com Python**, do então Instituto Politécnico de Viana do Castelo (IPVC), atual Universidade Politécnica de Viana do Castelo, e foi posteriormente expandido com **GeoPandas e Folium** durante a evolução dos estudos em Data Science.
 
+## English overview
+
+A data science study of sustainability and development across 25 Portuguese municipalities. It combines multivariate analysis, unsupervised clustering, and geospatial analysis to explore patterns in municipal indicators.
+
 ---
 
 ## Visão executiva | Geospatial Data Science
